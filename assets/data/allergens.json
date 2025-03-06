@@ -1,0 +1,25 @@
+{
+  "allergens": [
+    {
+      "id": "milk",
+      "translations": {
+        "en": ["milk", "dairy", "lactose", "whey"],
+        "pl": ["mleko", "nabiał", "laktoza", "serwatka"]
+      }
+    },
+    {
+      "id": "peanut",
+      "translations": {
+        "en": ["peanut", "peanuts", "groundnut"],
+        "pl": ["orzech ziemny", "orzeszki ziemne", "arachid"]
+      }
+    },
+    {
+      "id": "egg",
+      "translations": {
+        "en": ["egg", "eggs", "albumin"],
+        "pl": ["jajko", "jajka", "albumina"]
+      }
+    }
+  ]
+}

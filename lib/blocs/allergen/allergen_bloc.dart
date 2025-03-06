@@ -6,12 +6,17 @@ import '../../repositories/allergen_repository.dart';
 abstract class AllergenEvent {}
 
 class LoadAllergens extends AllergenEvent {}
+
 class AddAllergen extends AllergenEvent {
   final String name;
-  final String? description;
+  final Map<String, List<String>> translations;
 
-  AddAllergen({required this.name, this.description});
+  AddAllergen({
+    required this.name,
+    required this.translations,
+  });
 }
+
 class DeleteAllergen extends AllergenEvent {
   final Allergen allergen;
 
@@ -44,6 +49,23 @@ class AllergenBloc extends Bloc<AllergenEvent, AllergenState> {
     on<DeleteAllergen>(_onDeleteAllergen);
   }
 
+  Future<void> _onAddAllergen(
+    AddAllergen event,
+    Emitter<AllergenState> emit,
+  ) async {
+    try {
+      await _repository.addAllergen(
+        Allergen(
+          name: event.name,
+          translations: event.translations,
+        ),
+      );
+      add(LoadAllergens());
+    } catch (e) {
+      emit(AllergenError(e.toString()));
+    }
+  }
+
   Future<void> _onLoadAllergens(
     LoadAllergens event,
     Emitter<AllergenState> emit,
@@ -52,20 +74,6 @@ class AllergenBloc extends Bloc<AllergenEvent, AllergenState> {
     try {
       final allergens = _repository.getAllAllergens();
       emit(AllergenLoaded(allergens));
-    } catch (e) {
-      emit(AllergenError(e.toString()));
-    }
-  }
-
-  Future<void> _onAddAllergen(
-    AddAllergen event,
-    Emitter<AllergenState> emit,
-  ) async {
-    try {
-      await _repository.addAllergen(
-        Allergen(name: event.name, description: event.description),
-      );
-      add(LoadAllergens());
     } catch (e) {
       emit(AllergenError(e.toString()));
     }

@@ -1,5 +1,7 @@
 {
     "appTitle": "Skaner Alergenów",
+    "selectAllergens": "Wybierz alergeny",
+    "findAllergens": "Znajdź alergeny...",
     "camera": "Aparat",
     "gallery": "Galeria",
     "testDemo": "Test Demo",
@@ -13,5 +15,11 @@
     "foundAllergens": "Znalezione alergeny: {allergens}",
     "noAllergensDetected": "Nie wykryto alergenów",
     "scannedText": "Zeskanowany tekst:",
-    "ok": "OK"
+    "ok": "OK",
+    "manageAllergens": "Zarządzaj Alergenami",
+    "enterAllergen": "Wprowadź alergen",
+    "pleaseEnterAllergen": "Proszę wprowadzić alergen",
+    "add": "Dodaj",
+    "noAllergensYet": "Nie dodano jeszcze żadnych alergenów",
+    "deleteAllergen": "Usuń alergen"
 }

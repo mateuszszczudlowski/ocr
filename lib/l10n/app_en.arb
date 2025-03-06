@@ -1,5 +1,7 @@
 {
     "appTitle": "Allergen Scanner",
+    "selectAllergens": "Select allergens",
+    "findAllergens": "Search for allergens...",
     "camera": "Camera",
     "gallery": "Gallery",
     "testDemo": "Test Demo",
@@ -14,6 +16,12 @@
     "noAllergensDetected": "No allergens detected",
     "scannedText": "Scanned Text:",
     "ok": "OK",
+    "manageAllergens": "Manage Allergens",
+    "enterAllergen": "Enter allergen",
+    "pleaseEnterAllergen": "Please enter an allergen",
+    "add": "Add",
+    "noAllergensYet": "No allergens added yet",
+    "deleteAllergen": "Delete allergen",
     "@errorPickingImage": {
         "placeholders": {
             "error": {

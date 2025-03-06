@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ocr/models/allergen_data.dart';
+import 'package:ocr/widgets/allergen_dropdown.dart';
 import '../models/allergen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AllergenFormScreen extends StatefulWidget {
   const AllergenFormScreen({super.key});
@@ -10,8 +13,6 @@ class AllergenFormScreen extends StatefulWidget {
 }
 
 class _AllergenFormScreenState extends State<AllergenFormScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _allergenController = TextEditingController();
   late Box<Allergen> _allergensBox;
 
   @override
@@ -20,62 +21,41 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
     _allergensBox = Hive.box<Allergen>('allergens');
   }
 
-  @override
-  void dispose() {
-    _allergenController.dispose();
-    super.dispose();
-  }
-
-  void _addAllergen() {
-    if (_formKey.currentState!.validate()) {
-      final allergen = Allergen(name: _allergenController.text.trim());
-      _allergensBox.add(allergen);
-      _allergenController.clear();
-      setState(() {});
-    }
-  }
-
   void _removeAllergen(int index) {
     _allergensBox.deleteAt(index);
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentLocale = Localizations.localeOf(context).languageCode;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Allergens'),
+        title: Text(l10n.manageAllergens),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Form(
-              key: _formKey,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _allergenController,
-                      decoration: const InputDecoration(
-                        labelText: 'Enter allergen',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter an allergen';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: _addAllergen,
-                    child: const Text('Add'),
-                  ),
-                ],
-              ),
+            // In AllergenFormScreen, add this where you use AllergenDropdown:
+            AllergenDropdown(
+              currentLocale: Localizations.localeOf(context).languageCode,
+              selectedAllergenIds: _allergensBox.values
+                  .map((allergen) => allergen.name)
+                  .toList(),
+              onSelected: (AllergenData allergen) {
+                final translations = allergen.translations;
+                final name = translations[currentLocale]?.first ?? 
+                           translations['en']?.first ?? 
+                           allergen.id;
+                
+                final newAllergen = Allergen(
+                  name: name,
+                  translations: Map<String, List<String>>.from(translations),
+                );
+                _allergensBox.add(newAllergen);
+              },
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -83,19 +63,43 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
                 valueListenable: _allergensBox.listenable(),
                 builder: (context, Box<Allergen> box, _) {
                   if (box.isEmpty) {
-                    return const Center(
-                      child: Text('No allergens added yet'),
+                    return Center(
+                      child: Text(l10n.noAllergensYet),
                     );
                   }
                   return ListView.builder(
                     itemCount: box.length,
                     itemBuilder: (context, index) {
                       final allergen = box.getAt(index)!;
-                      return ListTile(
-                        title: Text(allergen.name),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _removeAllergen(index),
+                      final displayName = allergen.translations?[currentLocale]?.first ?? 
+                                       allergen.name;
+                      final englishName = allergen.translations?['en']?.first;
+                      
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          title: Text(
+                            displayName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: englishName != null && englishName != displayName 
+                              ? Text(
+                                  englishName,
+                                  style: const TextStyle(fontSize: 16),
+                                )
+                              : null,
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, size: 28),
+                            tooltip: l10n.deleteAllergen,
+                            onPressed: () => _removeAllergen(index),
+                          ),
                         ),
                       );
                     },

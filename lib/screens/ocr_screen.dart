@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ocr/services/ocr_service.dart';
+import 'package:ocr/widgets/language_selector.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import '../models/allergen.dart';
 import '../theme/theme_cubit.dart';
 import '../widgets/result_dialog.dart';
 import 'allergen_form_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OCRScreen extends StatefulWidget {
   const OCRScreen({super.key});
@@ -19,23 +21,17 @@ class OCRScreen extends StatefulWidget {
 
 class _OCRScreenState extends State<OCRScreen> {
   final ImagePicker _picker = ImagePicker();
-  final textRecognizer = TextRecognizer();
+  final _ocrService = OCRService();
   File? _image;
   String _extractedText = '';
   bool _isProcessing = false;
-  List<String> _matchedWords = [];
+  List<(String, String)> _matchedWords = [];
   late Box<Allergen> _allergensBox;
 
   @override
   void initState() {
     super.initState();
     _allergensBox = Hive.box<Allergen>('allergens');
-  }
-
-  List<String> get wordList {
-    return _allergensBox.values
-        .map((allergen) => allergen.name.toLowerCase())
-        .toList();
   }
 
   void _navigateToAllergenForm() {
@@ -54,7 +50,9 @@ class _OCRScreenState extends State<OCRScreen> {
         if (status.isDenied) {
           if (mounted) {
             scaffoldMessenger.showSnackBar(
-              const SnackBar(content: Text('Camera permission is required')),
+              SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context)!.cameraPermissionRequired)),
             );
           }
           return;
@@ -79,11 +77,10 @@ class _OCRScreenState extends State<OCRScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              source == ImageSource.camera
-                  ? 'Camera is not available. Please use a physical device.'
-                  : 'Error picking image: $e',
-            ),
+            content: Text(source == ImageSource.camera
+                ? AppLocalizations.of(context)!.cameraNotAvailable
+                : AppLocalizations.of(context)!
+                    .errorPickingImage(e.toString())),
           ),
         );
       }
@@ -93,17 +90,11 @@ class _OCRScreenState extends State<OCRScreen> {
   Future<void> _extractText() async {
     if (_image == null) return;
 
-    final inputImage = InputImage.fromFile(_image!);
-    final recognizedText = await textRecognizer.processImage(inputImage);
-    final scannedText = recognizedText.text.toLowerCase();
-
-    final matches =
-        wordList
-            .where((word) => scannedText.contains(word.toLowerCase()))
-            .toList();
+    final allergens = _allergensBox.values.toList();
+    final (text, matches) = await _ocrService.processImage(_image!, allergens);
 
     setState(() {
-      _extractedText = recognizedText.text;
+      _extractedText = text;
       _matchedWords = matches;
       _isProcessing = false;
     });
@@ -111,32 +102,26 @@ class _OCRScreenState extends State<OCRScreen> {
     if (mounted) {
       showDialog(
         context: context,
-        builder:
-            (context) =>
-                ResultDialog(matches: matches, text: recognizedText.text),
+        builder: (context) => ResultDialog(
+          matches: matches.map((m) => m.$1).toList(),
+          text: text,
+        ),
       );
     }
   }
 
   Future<void> _testOCR() async {
     setState(() {
-      _extractedText = '';
-      _matchedWords = [];
       _isProcessing = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
-
-    final testText = 'Example, this is a test image containing milk.';
-    final matches =
-        wordList
-            .where(
-              (word) => testText.toLowerCase().contains(word.toLowerCase()),
-            )
-            .toList();
+    final testText = 'Example, this is a test image containing milk, peanut.';
+    final allergens = _allergensBox.values.toList();
+    final (text, matches) =
+        (testText, _ocrService.findAllergens(testText, allergens));
 
     setState(() {
-      _extractedText = testText;
+      _extractedText = text;
       _matchedWords = matches;
       _isProcessing = false;
     });
@@ -144,14 +129,17 @@ class _OCRScreenState extends State<OCRScreen> {
     if (mounted) {
       showDialog(
         context: context,
-        builder: (context) => ResultDialog(matches: matches, text: testText),
+        builder: (context) => ResultDialog(
+          matches: matches.map((m) => m.$1).toList(),
+          text: text,
+        ),
       );
     }
   }
 
   @override
   void dispose() {
-    textRecognizer.close();
+    _ocrService.dispose();
     super.dispose();
   }
 
@@ -159,8 +147,12 @@ class _OCRScreenState extends State<OCRScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OCR App'),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: const LanguageSelector(),
+          ),
           IconButton(
             icon: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
@@ -197,7 +189,7 @@ class _OCRScreenState extends State<OCRScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt),
-                      label: const Text('Camera'),
+                      label: Text(AppLocalizations.of(context)!.camera),
                     ),
                   ),
                 ),
@@ -207,7 +199,7 @@ class _OCRScreenState extends State<OCRScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.gallery),
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Gallery'),
+                      label: Text(AppLocalizations.of(context)!.gallery),
                     ),
                   ),
                 ),
@@ -222,7 +214,7 @@ class _OCRScreenState extends State<OCRScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _testOCR,
                       icon: const Icon(Icons.bug_report),
-                      label: const Text('Test Demo'),
+                      label: Text(AppLocalizations.of(context)!.testDemo),
                     ),
                   ),
                 ),
@@ -232,25 +224,27 @@ class _OCRScreenState extends State<OCRScreen> {
             if (_isProcessing)
               const CircularProgressIndicator()
             else if (_extractedText.isNotEmpty) ...[
-              const Text(
-                'Extracted Text:',
+              Text(
+                AppLocalizations.of(context)!.extractedText,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 8),
               Text(_extractedText),
               const SizedBox(height: 16),
               if (_matchedWords.isNotEmpty) ...[
-                const Text(
-                  'Matched Words:',
+                Text(
+                  AppLocalizations.of(context)!.matchedWords,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
+                // In the build method, replace the Wrap widget with:
                 Wrap(
                   spacing: 8,
-                  children:
-                      _matchedWords
-                          .map((word) => Chip(label: Text(word)))
-                          .toList(),
+                  children: _matchedWords
+                      .map((match) => Chip(
+                            label: Text('${match.$1} (${match.$2})'),
+                          ))
+                      .toList(),
                 ),
               ],
             ],

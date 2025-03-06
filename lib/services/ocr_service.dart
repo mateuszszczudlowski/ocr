@@ -7,21 +7,44 @@ class OCRService {
 
   OCRService() : _textRecognizer = TextRecognizer();
 
-  Future<(String, List<String>)> processImage(
+  Future<(String, List<(String allergenName, String matchedTerm)>)> processImage(
     File image,
     List<Allergen> allergens,
   ) async {
     final inputImage = InputImage.fromFile(image);
     final recognizedText = await _textRecognizer.processImage(inputImage);
-    final scannedText = recognizedText.text;
+    final scannedText = recognizedText.text.toLowerCase();
     
-    final matches = allergens
-        .where((allergen) =>
-            scannedText.toLowerCase().contains(allergen.name.toLowerCase()))
-        .map((e) => e.name)
-        .toList();
+    return (recognizedText.text, findAllergens(scannedText, allergens));
+  }
 
-    return (scannedText, matches);
+  List<(String allergenName, String matchedTerm)> findAllergens(
+    String text, 
+    List<Allergen> allergens,
+  ) {
+    final scannedText = text.toLowerCase();
+    final matches = <(String, String)>[];
+
+    for (var allergen in allergens) {
+      // Check all possible translations for each allergen
+      if (allergen.translations != null) {
+        allergen.translations!.forEach((language, terms) {
+          for (var term in terms) {
+            if (scannedText.contains(term.toLowerCase())) {
+              // When found, add both the primary allergen name and the matched term
+              matches.add((allergen.name, term));
+            }
+          }
+        });
+      }
+      
+      // Also check the main name
+      if (scannedText.contains(allergen.name.toLowerCase())) {
+        matches.add((allergen.name, allergen.name));
+      }
+    }
+
+    return matches;
   }
 
   void dispose() {

@@ -8,16 +8,13 @@ class Allergen extends HiveObject {
   String name;
 
   @HiveField(1)
-  String? description;
+  Map<String, List<String>>? translations;
 
   @HiveField(2)
   DateTime createdAt;
 
   Allergen({
     required this.name,
-    this.description,
+    this.translations,
   }) : createdAt = DateTime.now();
-
-  @override
-  String toString() => name;
 }
