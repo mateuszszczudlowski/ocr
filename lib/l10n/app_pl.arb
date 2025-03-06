@@ -1,0 +1,17 @@
+{
+    "appTitle": "Skaner Alergenów",
+    "camera": "Aparat",
+    "gallery": "Galeria",
+    "testDemo": "Test Demo",
+    "extractedText": "Rozpoznany Tekst",
+    "matchedWords": "Znalezione Słowa",
+    "cameraPermissionRequired": "Wymagane uprawnienie aparatu",
+    "cameraNotAvailable": "Aparat nie jest dostępny. Użyj fizycznego urządzenia.",
+    "errorPickingImage": "Błąd wyboru zdjęcia: {error}",
+    "allergensFound": "Znaleziono Alergeny!",
+    "noAllergens": "Brak Alergenów",
+    "foundAllergens": "Znalezione alergeny: {allergens}",
+    "noAllergensDetected": "Nie wykryto alergenów",
+    "scannedText": "Zeskanowany tekst:",
+    "ok": "OK"
+}

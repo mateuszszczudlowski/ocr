@@ -1,0 +1,31 @@
+{
+    "appTitle": "Allergen Scanner",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "testDemo": "Test Demo",
+    "extractedText": "Extracted Text",
+    "matchedWords": "Matched Words",
+    "cameraPermissionRequired": "Camera permission is required",
+    "cameraNotAvailable": "Camera is not available. Please use a physical device.",
+    "errorPickingImage": "Error picking image: {error}",
+    "allergensFound": "Allergens Found!",
+    "noAllergens": "No Allergens",
+    "foundAllergens": "Found these allergens: {allergens}",
+    "noAllergensDetected": "No allergens detected",
+    "scannedText": "Scanned Text:",
+    "ok": "OK",
+    "@errorPickingImage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "@foundAllergens": {
+        "placeholders": {
+            "allergens": {
+                "type": "String"
+            }
+        }
+    }
+}
