@@ -1,41 +1,41 @@
-# Allergen Scanner
+# 🔍 Allergen Scanner
 
 A mobile application that helps users identify potential allergens in food products by scanning product labels.
 
-## Features
+## ✨ Features
 
-- Create and manage your personal allergen list
-- Scan product labels using your device's camera
-- Real-time allergen detection in scanned text
-- Dark/Light theme support
-- Multi-language support (English and Polish)
-- Offline functionality
-- User-friendly interface
+- 📝 Create and manage your personal allergen list
+- 📸 Scan product labels using your device's camera
+- ⚡️ Real-time allergen detection in scanned text
+- 🌓 Dark/Light theme support
+- 🌍 Multi-language support (English and Polish)
+- 🔄 Offline functionality
+- 🎯 User-friendly interface
 
-## How It Works
+## 🚀 How It Works
 
-1. **Create Your Allergen List**
+1. **📋 Create Your Allergen List**
    - Add allergens you need to avoid
    - Manage your list anytime
 
-2. **Scan Product Labels**
+2. **📱 Scan Product Labels**
    - Use your camera to scan product ingredients
    - Choose images from your gallery
 
-3. **Instant Results**
+3. **✅ Instant Results**
    - Get immediate feedback if any allergens are detected
    - View the full scanned text
    - See highlighted matches from your allergen list
 
-## Technical Details
+## 🛠 Technical Details
 
 This project is a Proof of Concept (POC) built with:
-- Flutter
-- Google ML Kit for text recognition
-- Hive for local storage
-- BLoC pattern for state management
+- 💙 Flutter
+- 🤖 Google ML Kit for text recognition
+- 📦 Hive for local storage
+- 🔄 BLoC pattern for state management
 
-## Getting Started
+## 🏁 Getting Started
 
 1. Clone the repository
 2. Install dependencies:
