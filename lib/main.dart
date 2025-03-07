@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ocr/blocs/allergen/allergen_bloc.dart';
 import 'package:ocr/repositories/allergen_repository.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ocr/theme/app_theme.dart';
 import 'package:ocr/theme/language_cubit.dart';
 import 'models/allergen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,17 +47,8 @@ class MyApp extends StatelessWidget {
               locale: locale,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              theme: ThemeData(
-                useMaterial3: true,
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-              ),
-              darkTheme: ThemeData(
-                useMaterial3: true,
-                colorScheme: ColorScheme.fromSeed(
-                  seedColor: Colors.blue,
-                  brightness: Brightness.dark,
-                ),
-              ),
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
               themeMode: themeMode,
               home: const OCRScreen(),
               builder: (context, child) {

@@ -52,6 +52,14 @@ class _AllergenDropdownState extends State<AllergenDropdown> {
   }
 
   @override
+  void didUpdateWidget(AllergenDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedAllergenIds != widget.selectedAllergenIds) {
+      _loadAllergens();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
@@ -70,10 +78,16 @@ class _AllergenDropdownState extends State<AllergenDropdown> {
                     value: item,
                     child: StatefulBuilder(
                       builder: (context, menuSetState) {
-                        final translations = item.translations[widget.currentLocale] ?? [];
-                        final englishTranslations = item.translations['en'] ?? [];
-                        final displayName = translations.isNotEmpty ? translations.first : item.id;
-                        final englishName = englishTranslations.isNotEmpty ? englishTranslations.first : item.id;
+                        final translations =
+                            item.translations[widget.currentLocale] ?? [];
+                        final englishTranslations =
+                            item.translations['en'] ?? [];
+                        final displayName = translations.isNotEmpty
+                            ? translations.first
+                            : item.id;
+                        final englishName = englishTranslations.isNotEmpty
+                            ? englishTranslations.first
+                            : item.id;
 
                         return Container(
                           height: 60,
@@ -92,7 +106,8 @@ class _AllergenDropdownState extends State<AllergenDropdown> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    if (widget.currentLocale != 'en' && englishName != displayName)
+                                    if (widget.currentLocale != 'en' &&
+                                        englishName != displayName)
                                       Text(
                                         englishName,
                                         style: TextStyle(
@@ -122,7 +137,7 @@ class _AllergenDropdownState extends State<AllergenDropdown> {
                 const EdgeInsets.symmetric(horizontal: 21), // Increased by 1.5x
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6), // Increased by 1.5x
-              border: Border.all(color: Colors.black26),
+              border: Border.all(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           dropdownStyleData: DropdownStyleData(

@@ -21,5 +21,9 @@
     "pleaseEnterAllergen": "Proszę wprowadzić alergen",
     "add": "Dodaj",
     "noAllergensYet": "Nie dodano jeszcze żadnych alergenów",
-    "deleteAllergen": "Usuń alergen"
+    "deleteAllergen": "Usuń alergen",
+    "settings": "Ustawienia",
+    "language": "Język",
+    "theme": "Motyw",
+    "allergenAlreadyExists": "Ten alergen jest już na twojej liście"
 }

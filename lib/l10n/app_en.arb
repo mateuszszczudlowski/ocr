@@ -35,5 +35,9 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "allergenAlreadyExists": "This allergen is already in your list"
 }

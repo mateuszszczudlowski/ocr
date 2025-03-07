@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ocr/screens/settings_screen.dart';
 import 'package:ocr/services/ocr_service.dart';
-import 'package:ocr/widgets/language_selector.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/allergen.dart';
-import '../theme/theme_cubit.dart';
 import '../widgets/result_dialog.dart';
 import 'allergen_form_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,6 +25,7 @@ class _OCRScreenState extends State<OCRScreen> {
   bool _isProcessing = false;
   List<(String, String)> _matchedWords = [];
   late Box<Allergen> _allergensBox;
+  double _textSize = 16.0; // Add this line for text size control
 
   @override
   void initState() {
@@ -147,39 +146,41 @@ class _OCRScreenState extends State<OCRScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
+        centerTitle: false,
+        title: Text(
+          AppLocalizations.of(context)!.appTitle,
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: const LanguageSelector(),
-          ),
           IconButton(
-            icon: BlocBuilder<ThemeCubit, ThemeMode>(
-              builder: (context, themeMode) {
-                return Icon(
-                  size: 32,
-                  themeMode == ThemeMode.light
-                      ? Icons.dark_mode
-                      : Icons.light_mode,
-                );
-              },
+            icon: Icon(
+              Icons.settings,
+              size: 28,
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () {
-              context.read<ThemeCubit>().toggleTheme();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
             },
           ),
           IconButton(
-            icon: const Icon(size: 42, Icons.edit_note),
+            icon: Icon(
+              Icons.edit_note,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             onPressed: _navigateToAllergenForm,
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         child: Column(
           children: [
             if (_image != null) Image.file(_image!, height: 200),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -187,25 +188,40 @@ class _OCRScreenState extends State<OCRScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton.icon(
-                      onPressed: () => _pickImage(ImageSource.camera),
-                      icon: const Icon(Icons.camera_alt),
-                      label: Text(AppLocalizations.of(context)!.camera),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: const Icon(Icons.photo_library),
-                      label: Text(AppLocalizations.of(context)!.gallery),
+                      icon: const Icon(Icons.photo_library,
+                          size: 24, color: Colors.black),
+                      label: Text(
+                        AppLocalizations.of(context)!.gallery,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      style: Theme.of(context).elevatedButtonTheme.style,
                     ),
                   ),
                 ),
               ],
             ),
-            // Replace the test button's onPressed
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _pickImage(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt,
+                          size: 24, color: Colors.black),
+                      label: Text(
+                        AppLocalizations.of(context)!.camera,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      style: Theme.of(context).elevatedButtonTheme.style,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
@@ -213,8 +229,13 @@ class _OCRScreenState extends State<OCRScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton.icon(
                       onPressed: _testOCR,
-                      icon: const Icon(Icons.bug_report),
-                      label: Text(AppLocalizations.of(context)!.testDemo),
+                      icon: const Icon(Icons.bug_report,
+                          size: 24, color: Colors.black),
+                      label: Text(
+                        AppLocalizations.of(context)!.testDemo,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      style: Theme.of(context).elevatedButtonTheme.style,
                     ),
                   ),
                 ),
@@ -224,25 +245,68 @@ class _OCRScreenState extends State<OCRScreen> {
             if (_isProcessing)
               const CircularProgressIndicator()
             else if (_extractedText.isNotEmpty) ...[
-              Text(
-                AppLocalizations.of(context)!.extractedText,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.extractedText,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.text_fields, size: 24),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Slider(
+                            value: _textSize,
+                            min: 16.0,
+                            max: 26.0,
+                            divisions: 8,
+                            label: _textSize.round().toString(),
+                            onChanged: (value) {
+                              setState(() {
+                                _textSize = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
-              Text(_extractedText),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  _extractedText,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: _textSize,
+                      ),
+                ),
+              ),
               const SizedBox(height: 16),
               if (_matchedWords.isNotEmpty) ...[
                 Text(
                   AppLocalizations.of(context)!.matchedWords,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 8),
-                // In the build method, replace the Wrap widget with:
                 Wrap(
                   spacing: 8,
                   children: _matchedWords
                       .map((match) => Chip(
-                            label: Text('${match.$1} (${match.$2})'),
+                            label: Text(
+                              '${match.$1} (${match.$2})',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ))
                       .toList(),
                 ),
