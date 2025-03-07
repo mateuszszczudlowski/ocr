@@ -68,19 +68,3 @@ flutter pub get
 
 ## Note
 This is a Proof of Concept application. While it can help identify allergens in product labels, it should not be the sole method for determining food safety. Always consult product packaging and manufacturers' information for definitive allergen information.
-
-## Features
-
-- OCR (Optical Character Recognition) for text extraction from images
-- Camera and gallery image support
-- Allergen detection and highlighting
-- Multi-language support (English and Polish)
-- Dark/Light theme support
-- Accessibility features:
-  - Adjustable text size for extracted text (16-32px)
-  - High contrast UI elements
-- Allergen Management:
-  - Add/Remove allergens from personalized list
-  - Duplicate allergen prevention
-  - Multi-language allergen names support
-  - Search functionality in allergen selection
