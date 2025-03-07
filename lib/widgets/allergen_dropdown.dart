@@ -44,9 +44,6 @@ class _AllergenDropdownState extends State<AllergenDropdown> {
     setState(() {
       _allergens = (json['allergens'] as List)
           .map((item) => AllergenData.fromJson(item))
-          .toList()
-          .where(
-              (allergen) => !widget.selectedAllergenIds.contains(allergen.id))
           .toList();
     });
   }

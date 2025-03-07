@@ -92,9 +92,24 @@ class _OCRScreenState extends State<OCRScreen> {
     final allergens = _allergensBox.values.toList();
     final (text, matches) = await _ocrService.processImage(_image!, allergens);
 
+    // Process matches to remove duplicates
+    final uniqueMatches = <String, Set<String>>{};
+    for (var match in matches) {
+      uniqueMatches.putIfAbsent(match.$1, () => <String>{});
+      if (match.$2.isNotEmpty) {
+        uniqueMatches[match.$1]!.add(match.$2);
+      }
+    }
+
+    // Convert to list of tuples with combined translations
+    final processedMatches = uniqueMatches.entries.map((entry) {
+      final translations = entry.value.join(', ');
+      return (entry.key, translations);
+    }).toList();
+
     setState(() {
       _extractedText = text;
-      _matchedWords = matches;
+      _matchedWords = processedMatches;
       _isProcessing = false;
     });
 
@@ -102,26 +117,42 @@ class _OCRScreenState extends State<OCRScreen> {
       showDialog(
         context: context,
         builder: (context) => ResultDialog(
-          matches: matches.map((m) => m.$1).toList(),
+          matches: uniqueMatches.keys.toList(),
           text: text,
         ),
       );
     }
   }
 
+  // Update _testOCR method similarly
   Future<void> _testOCR() async {
     setState(() {
       _isProcessing = true;
     });
 
-    final testText = 'Example, this is a test image containing milk, peanut.';
+    final testText = 'Example, this is a test image containing mleko, peanut.';
     final allergens = _allergensBox.values.toList();
     final (text, matches) =
         (testText, _ocrService.findAllergens(testText, allergens));
 
+    // Process matches to remove duplicates
+    final uniqueMatches = <String, Set<String>>{};
+    for (var match in matches) {
+      uniqueMatches.putIfAbsent(match.$1, () => <String>{});
+      if (match.$2.isNotEmpty) {
+        uniqueMatches[match.$1]!.add(match.$2);
+      }
+    }
+
+    // Convert to list of tuples with combined translations
+    final processedMatches = uniqueMatches.entries.map((entry) {
+      final translations = entry.value.join(', ');
+      return (entry.key, translations);
+    }).toList();
+
     setState(() {
       _extractedText = text;
-      _matchedWords = matches;
+      _matchedWords = processedMatches;
       _isProcessing = false;
     });
 
@@ -129,7 +160,7 @@ class _OCRScreenState extends State<OCRScreen> {
       showDialog(
         context: context,
         builder: (context) => ResultDialog(
-          matches: matches.map((m) => m.$1).toList(),
+          matches: uniqueMatches.keys.toList(),
           text: text,
         ),
       );
@@ -304,7 +335,7 @@ class _OCRScreenState extends State<OCRScreen> {
                   children: _matchedWords
                       .map((match) => Chip(
                             label: Text(
-                              '${match.$1} (${match.$2})',
+                              match.$2.isEmpty ? match.$1 : '${match.$1} (${match.$2})',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ))
