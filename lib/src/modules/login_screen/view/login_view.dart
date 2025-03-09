@@ -1,15 +1,18 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ocr/src/config/routes.dart';
 import 'package:pinput/pinput.dart';
-import 'package:ocr/screens/ocr_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+@RoutePage()
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginViewState extends State<LoginView> {
   final pinController = TextEditingController();
   final focusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
@@ -23,14 +26,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _verifyOTP(String pin) {
     if (pin == '12345') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const OCRScreen()),
-      );
+      context.router.push(const MainRoute());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid OTP. Please try 12345'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.invalidOTP),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -38,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       body: Form(
         key: formKey,
@@ -47,9 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Enter verification code',
-                  style: TextStyle(
+                Text(
+                  l10n.enterVerificationCode,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Oswald',
@@ -75,9 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onCompleted: _verifyOTP,
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  'Use code: 12345',
-                  style: TextStyle(
+                Text(
+                  l10n.demoCode,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
                   ),

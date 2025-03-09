@@ -1,15 +1,17 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ScannerScreen extends StatefulWidget {
-  const ScannerScreen({super.key});
+@RoutePage()
+class ScannerView extends StatefulWidget {
+  const ScannerView({super.key});
 
   @override
-  State<ScannerScreen> createState() => _ScannerScreenState();
+  State<ScannerView> createState() => _ScannerViewState();
 }
 
-class _ScannerScreenState extends State<ScannerScreen> {
+class _ScannerViewState extends State<ScannerView> {
   CameraController? _controller;
   bool _isCameraInitialized = false;
 
@@ -46,7 +48,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
         Navigator.pop(context, image);
       }
     } catch (e) {
-      debugPrint('Error taking picture: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorTakingPicture(e.toString()),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -58,6 +68,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -67,13 +79,23 @@ class _ScannerScreenState extends State<ScannerScreen> {
               child: CameraPreview(_controller!),
             )
           else
-            const Center(
-              child: CircularProgressIndicator(),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.scanningInProgress,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          // Scan area overlay
           Center(
             child: Container(
-              margin: const EdgeInsets.all(50),
+              margin: const EdgeInsets.only(
+                  top: 60, bottom: 50, left: 40, right: 40),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.white,
@@ -91,7 +113,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(20),
                 ),
@@ -101,7 +123,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.camera,
+                      l10n.scannerTitle,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -109,9 +131,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Position the ingredients list in the frame',
-                      style: TextStyle(
+                    Text(
+                      l10n.positionIngredientsInstruction,
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
                       ),
@@ -132,20 +154,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
             ),
           ),
           // Close button
-          Positioned(
-            top: 0,
-            left: 0,
-            child: SafeArea(
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 32,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ),
         ],
       ),
     );

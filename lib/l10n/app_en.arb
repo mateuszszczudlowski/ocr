@@ -1,44 +1,40 @@
 {
-    "home": "Home",
-    "appTitle": "Allergen Scanner",
-    "selectAllergens": "Select allergens",
-    "findAllergens": "Search for allergens...",
-    "camera": "Camera",
-    "gallery": "Gallery",
-    "testDemo": "Test Demo",
-    "extractedText": "Extracted Text",
-    "matchedWords": "Matched Words",
-    "cameraPermissionRequired": "Camera permission is required",
-    "cameraNotAvailable": "Camera is not available. Please use a physical device.",
-    "errorPickingImage": "Error picking image: {error}",
-    "allergensFound": "Allergens Found!",
-    "noAllergens": "No Allergens",
-    "foundAllergens": "Found these allergens: {allergens}",
-    "noAllergensDetected": "No allergens detected",
-    "scannedText": "Scanned Text:",
-    "ok": "OK",
-    "manageAllergens": "Manage Allergens",
-    "enterAllergen": "Enter allergen",
-    "pleaseEnterAllergen": "Please enter an allergen",
     "add": "Add",
-    "noAllergensYet": "No allergens added yet",
+    "addAllergensInstruction": "1. Add your allergens in the list",
+    "allergenAlreadyExists": "This allergen is already in your list",
+    "allergensFound": "Allergens Found!",
+    "appTitle": "Allergen Scanner",
+    "camera": "Camera",
+    "cameraNotAvailable": "Camera is not available. Use physical device.",
+    "cameraPermissionRequired": "Camera permission is required",
     "deleteAllergen": "Delete allergen",
-    "@errorPickingImage": {
-        "placeholders": {
-            "error": {
-                "type": "String"
-            }
-        }
-    },
-    "@foundAllergens": {
-        "placeholders": {
-            "allergens": {
-                "type": "String"
-            }
-        }
-    },
-    "settings": "Settings",
+    "demoCode": "Use code: 12345",
+    "enterAllergen": "Enter allergen",
+    "enterVerificationCode": "Enter verification code",
+    "errorPickingImage": "Error picking image: {error}",
+    "errorTakingPicture": "Error taking picture: {error}",
+    "extractedText": "Extracted Text",
+    "findAllergens": "Find allergens...",
+    "foundAllergens": "Found allergens: {allergens}",
+    "gallery": "Gallery",
+    "getStarted": "Get Started",
+    "home": "Home",
+    "invalidOTP": "Invalid OTP. Please try 12345",
     "language": "Language",
-    "theme": "Theme",
-    "allergenAlreadyExists": "This allergen is already in your list"
+    "manageAllergens": "Manage Allergens",
+    "matchedWords": "Found Words",
+    "noAllergens": "No Allergens",
+    "noAllergensDetected": "No allergens detected",
+    "noAllergensYet": "No allergens added yet",
+    "ok": "OK",
+    "pleaseEnterAllergen": "Please enter allergen",
+    "positionIngredientsInstruction": "Position the ingredients list in the frame",
+    "scannerTitle": "Scanner",
+    "scanningInProgress": "Scanning...",
+    "scannedText": "Scanned text:",
+    "selectAllergens": "Select allergens",
+    "settings": "Settings",
+    "takePhotoInstruction": "2. Take a photo of product ingredients",
+    "testDemo": "Test Demo",
+    "theme": "Theme"
 }

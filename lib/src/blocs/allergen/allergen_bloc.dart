@@ -27,12 +27,15 @@ class DeleteAllergen extends AllergenEvent {
 abstract class AllergenState {}
 
 class AllergenInitial extends AllergenState {}
+
 class AllergenLoading extends AllergenState {}
+
 class AllergenLoaded extends AllergenState {
   final List<Allergen> allergens;
 
   AllergenLoaded(this.allergens);
 }
+
 class AllergenError extends AllergenState {
   final String message;
 
@@ -66,6 +69,18 @@ class AllergenBloc extends Bloc<AllergenEvent, AllergenState> {
     }
   }
 
+  Future<void> _onDeleteAllergen(
+    DeleteAllergen event,
+    Emitter<AllergenState> emit,
+  ) async {
+    try {
+      await _repository.removeAllergen(event.allergen);
+      add(LoadAllergens());
+    } catch (e) {
+      emit(AllergenError(e.toString()));
+    }
+  }
+
   Future<void> _onLoadAllergens(
     LoadAllergens event,
     Emitter<AllergenState> emit,
@@ -74,18 +89,6 @@ class AllergenBloc extends Bloc<AllergenEvent, AllergenState> {
     try {
       final allergens = _repository.getAllAllergens();
       emit(AllergenLoaded(allergens));
-    } catch (e) {
-      emit(AllergenError(e.toString()));
-    }
-  }
-
-  Future<void> _onDeleteAllergen(
-    DeleteAllergen event,
-    Emitter<AllergenState> emit,
-  ) async {
-    try {
-      await _repository.removeAllergen(event.allergen);
-      add(LoadAllergens());
     } catch (e) {
       emit(AllergenError(e.toString()));
     }

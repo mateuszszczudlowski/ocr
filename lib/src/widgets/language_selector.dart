@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../theme/language_cubit.dart';
+import '../config/theme/language_cubit.dart';
 
 class LanguageSelector extends StatelessWidget {
   const LanguageSelector({super.key});

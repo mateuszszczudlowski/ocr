@@ -7,19 +7,20 @@ class OCRService {
 
   OCRService() : _textRecognizer = TextRecognizer();
 
-  Future<(String, List<(String allergenName, String matchedTerm)>)> processImage(
+  Future<(String, List<(String allergenName, String matchedTerm)>)>
+      processImage(
     File image,
     List<Allergen> allergens,
   ) async {
     final inputImage = InputImage.fromFile(image);
     final recognizedText = await _textRecognizer.processImage(inputImage);
     final scannedText = recognizedText.text.toLowerCase();
-    
+
     return (recognizedText.text, findAllergens(scannedText, allergens));
   }
 
   List<(String allergenName, String matchedTerm)> findAllergens(
-    String text, 
+    String text,
     List<Allergen> allergens,
   ) {
     final scannedText = text.toLowerCase();
@@ -37,7 +38,7 @@ class OCRService {
           }
         });
       }
-      
+
       // Also check the main name
       if (scannedText.contains(allergen.name.toLowerCase())) {
         matches.add((allergen.name, allergen.name));

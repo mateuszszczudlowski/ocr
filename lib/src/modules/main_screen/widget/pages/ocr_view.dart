@@ -1,44 +1,37 @@
 import 'dart:io';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ocr/screens/settings_screen.dart';
-import 'package:ocr/services/ocr_service.dart';
+import 'package:ocr/src/config/routes.dart';
+import 'package:ocr/src/repositories/allergen_repository.dart';
+import 'package:ocr/src/services/ocr_service.dart';
+import 'package:ocr/src/widgets/result_dialog.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import '../models/allergen.dart';
-import '../widgets/result_dialog.dart';
-import 'allergen_form_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:ocr/screens/scanner_screen.dart';
 
-class OCRScreen extends StatefulWidget {
-  const OCRScreen({super.key});
+@RoutePage()
+class OCRView extends StatefulWidget {
+  const OCRView({super.key});
 
   @override
-  State<OCRScreen> createState() => _OCRScreenState();
+  State<OCRView> createState() => _OCRViewState();
 }
 
-class _OCRScreenState extends State<OCRScreen> {
+class _OCRViewState extends State<OCRView> {
   final ImagePicker _picker = ImagePicker();
   final _ocrService = OCRService();
   File? _image;
   String _extractedText = '';
   bool _isProcessing = false;
   List<(String, String)> _matchedWords = [];
-  late Box<Allergen> _allergensBox;
-  double _textSize = 16.0; // Add this line for text size control
+  double _textSize = 16.0;
+  late final AllergenRepository _allergenRepository;
 
   @override
   void initState() {
     super.initState();
-    _allergensBox = Hive.box<Allergen>('allergens');
-  }
-
-  void _navigateToAllergenForm() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AllergenFormScreen()),
-    );
+    _allergenRepository = context.read<AllergenRepository>();
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -90,7 +83,7 @@ class _OCRScreenState extends State<OCRScreen> {
   Future<void> _extractText() async {
     if (_image == null) return;
 
-    final allergens = _allergensBox.values.toList();
+    final allergens = _allergenRepository.getAllAllergens();
     final (text, matches) = await _ocrService.processImage(_image!, allergens);
 
     // Process matches to remove duplicates
@@ -125,14 +118,13 @@ class _OCRScreenState extends State<OCRScreen> {
     }
   }
 
-  // Update _testOCR method similarly
   Future<void> _testOCR() async {
     setState(() {
       _isProcessing = true;
     });
 
     final testText = 'Example, this is a test image containing mleko, peanut.';
-    final allergens = _allergensBox.values.toList();
+    final allergens = _allergenRepository.getAllAllergens();
     final (text, matches) =
         (testText, _ocrService.findAllergens(testText, allergens));
 
@@ -176,17 +168,19 @@ class _OCRScreenState extends State<OCRScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         automaticallyImplyLeading: false,
         title: Text(
-          AppLocalizations.of(context)!.appTitle,
+          l10n.appTitle,
           style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Oswald',
-          ),
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Oswald',
+              color: Theme.of(context).colorScheme.tertiary),
         ),
         actions: [
           IconButton(
@@ -196,10 +190,7 @@ class _OCRScreenState extends State<OCRScreen> {
               color: Theme.of(context).colorScheme.tertiary,
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
+              context.router.push(const SettingsRoute());
             },
           ),
         ],
@@ -281,22 +272,29 @@ class _OCRScreenState extends State<OCRScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.list_sharp, size: 160),
+                    const Icon(Icons.list_sharp, size: 160),
                     Text(
-                      'Get Started',
+                      l10n.getStarted,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontFamily: 'Oswald',
+                            fontSize: 24,
                           ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '1. Add your allergens in the list',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      l10n.addAllergensInstruction,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontSize: 18),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '2. Take a photo of product ingredients',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      l10n.takePhotoInstruction,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontSize: 18),
                     ),
                     const SizedBox(height: 16),
                     Icon(
@@ -381,72 +379,6 @@ class _OCRScreenState extends State<OCRScreen> {
               ],
             ],
           ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x26000000),
-              blurRadius: 12,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          height: 72,
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.home_outlined, size: 28),
-              selectedIcon: const Icon(Icons.home, size: 28),
-              label: AppLocalizations.of(context)!.home,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.camera_alt_outlined, size: 28),
-              selectedIcon: const Icon(Icons.camera_alt, size: 28),
-              label: AppLocalizations.of(context)!.camera,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.add_box_outlined, size: 28),
-              selectedIcon: const Icon(Icons.add_box, size: 28),
-              label: AppLocalizations.of(context)!.add,
-            ),
-          ],
-          selectedIndex: 0,
-          onDestinationSelected: (index) {
-            switch (index) {
-              case 0:
-                // Already on home screen
-                break;
-              case 1:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ScannerScreen(),
-                  ),
-                ).then((image) {
-                  if (image != null) {
-                    setState(() {
-                      _image = File(image.path);
-                      _extractedText = '';
-                      _matchedWords = [];
-                      _isProcessing = true;
-                    });
-                    _extractText();
-                  }
-                });
-                break;
-              case 2:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AllergenFormScreen()),
-                );
-                break;
-            }
-          },
-          indicatorColor: Colors.black26,
-          surfaceTintColor: Colors.transparent,
         ),
       ),
     );

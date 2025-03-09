@@ -1,17 +1,22 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../theme/theme_cubit.dart';
-import '../widgets/language_selector.dart';
+import '../../../config/theme/theme_cubit.dart';
+import '../../../widgets/language_selector.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+@RoutePage()
+class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settings),
+        title: Text(
+          AppLocalizations.of(context)!.settings,
+          style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),

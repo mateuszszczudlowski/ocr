@@ -16,7 +16,7 @@ class AppTheme {
       backgroundColor: Color(0xFFF8F9FA),
       elevation: 0,
       centerTitle: true,
-      iconTheme: IconThemeData(color: Color(0xFF6B9AC4)),
+      iconTheme: IconThemeData(color: Color(0xFF000000)),
       titleTextStyle: TextStyle(
         color: Color(0xFF2D3436),
         fontSize: 24,
@@ -75,7 +75,7 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1B1B1D),
       elevation: 0,
-      iconTheme: IconThemeData(color: Color(0xFF6B9AC4)),
+      iconTheme: IconThemeData(color: Color(0xFFFFFFFF)),
       titleTextStyle: TextStyle(
         color: Colors.white,
         fontSize: 24,
