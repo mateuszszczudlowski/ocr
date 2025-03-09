@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ocr/models/allergen_data.dart';
+import 'package:ocr/screens/ocr_screen.dart';
+import 'package:ocr/screens/scanner_screen.dart';
 import 'package:ocr/widgets/allergen_dropdown.dart';
 import '../models/allergen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -32,6 +34,7 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(l10n.manageAllergens),
       ),
       body: Padding(
@@ -84,7 +87,7 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
                     return Center(
                       child: Text(
                         l10n.noAllergensYet,
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 18),
                       ),
                     );
                   }
@@ -96,7 +99,6 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
                           allergen.translations?[currentLocale]?.first ??
                               allergen.name;
                       final englishName = allergen.translations?['en']?.first;
-
                       return Card(
                         elevation: 2,
                         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -132,6 +134,63 @@ class _AllergenFormScreenState extends State<AllergenFormScreen> {
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(
+              0xFF1C1B1F), // Add this line for the dark background color
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          height: 72,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined, size: 28),
+              selectedIcon: const Icon(Icons.home, size: 28),
+              label: AppLocalizations.of(context)!.home,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.camera_alt_outlined, size: 28),
+              selectedIcon: const Icon(Icons.camera_alt, size: 28),
+              label: AppLocalizations.of(context)!.camera,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.add_box_outlined, size: 28),
+              selectedIcon: const Icon(Icons.add_box, size: 28),
+              label: AppLocalizations.of(context)!.add,
+            ),
+          ],
+          selectedIndex: 2,
+          onDestinationSelected: (index) {
+            switch (index) {
+              case 0:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OCRScreen()),
+                );
+                break;
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScannerScreen(),
+                  ),
+                );
+                break;
+              case 2:
+                // Already on allergen form screen
+                break;
+            }
+          },
+          indicatorColor: Colors.black26,
+          surfaceTintColor: Colors.transparent,
         ),
       ),
     );

@@ -40,6 +40,9 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_bloc: ^8.1.3
   dropdown_button2: ^2.3.9
+  pinput: ^5.0.1
+  google_fonts: ^6.1.0
+  camera: ^0.10.5+9
 
 dev_dependencies:
   hive_generator: ^2.0.1
@@ -59,12 +62,28 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  generate: true # Add this line
+  generate: true  # Add this line
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/data/allergens.json
+    
+  fonts:
+    - family: Oswald
+      fonts:
+        - asset: assets/fonts/Oswald-Regular.ttf
+        - asset: assets/fonts/Oswald-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Oswald-Bold.ttf
+          weight: 700
+    
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

@@ -9,6 +9,7 @@ class AppTheme {
       secondary: const Color(0xFF97C1D9),
       surface: const Color(0xFFF8F9FA),
       error: const Color(0xFFE76F51),
+      tertiary: const Color(0xFF000000),
     ),
     scaffoldBackgroundColor: const Color(0xFFF8F9FA),
     appBarTheme: const AppBarTheme(
@@ -32,6 +33,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFFF2F2F7),
+      // Add this line for the shadow color
     ),
     cardTheme: CardTheme(
       color: Colors.white,
@@ -64,12 +69,12 @@ class AppTheme {
       secondary: const Color(0xFF97C1D9),
       surface: const Color(0xFF2D3436),
       error: const Color(0xFFE76F51),
+      tertiary: const Color(0xFFFFFFFF),
     ),
     scaffoldBackgroundColor: const Color(0xFF1B1B1D),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1B1B1D),
       elevation: 0,
-      centerTitle: true,
       iconTheme: IconThemeData(color: Color(0xFF6B9AC4)),
       titleTextStyle: TextStyle(
         color: Colors.white,
@@ -88,8 +93,11 @@ class AppTheme {
         ),
       ),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFF1C1B1F),
+    ),
     cardTheme: CardTheme(
-      color: const Color(0xFF2D3436),
+      color: const Color(0xFF171718),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

@@ -8,7 +8,7 @@ import 'package:ocr/theme/language_cubit.dart';
 import 'models/allergen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme/theme_cubit.dart';
-import 'screens/ocr_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +50,8 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeMode,
-              home: const OCRScreen(),
+              // In MaterialApp widget, update home:
+              home: const LoginScreen(),
               builder: (context, child) {
                 return Builder(
                   builder: (context) {

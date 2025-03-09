@@ -9,6 +9,7 @@ import '../models/allergen.dart';
 import '../widgets/result_dialog.dart';
 import 'allergen_form_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ocr/screens/scanner_screen.dart';
 
 class OCRScreen extends StatefulWidget {
   const OCRScreen({super.key});
@@ -178,16 +179,21 @@ class _OCRScreenState extends State<OCRScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
+        automaticallyImplyLeading: false,
         title: Text(
           AppLocalizations.of(context)!.appTitle,
-          style: Theme.of(context).appBarTheme.titleTextStyle,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Oswald',
+          ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               Icons.settings,
               size: 28,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
             onPressed: () {
               Navigator.push(
@@ -196,85 +202,114 @@ class _OCRScreenState extends State<OCRScreen> {
               );
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.edit_note,
-              size: 32,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            onPressed: _navigateToAllergenForm,
-          ),
         ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_image != null) Image.file(_image!, height: 200),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: const Icon(Icons.photo_library,
-                          size: 24, color: Colors.black),
-                      label: Text(
-                        AppLocalizations.of(context)!.gallery,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      style: Theme.of(context).elevatedButtonTheme.style,
+            // if (_image != null) Image.file(_image!, height: 200),
+            // const SizedBox(height: 10),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     Expanded(
+            //       child: Padding(
+            //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //         child: ElevatedButton.icon(
+            //           onPressed: () => _pickImage(ImageSource.gallery),
+            //           icon: const Icon(Icons.photo_library,
+            //               size: 24, color: Colors.black),
+            //           label: Text(
+            //             AppLocalizations.of(context)!.gallery,
+            //             style: const TextStyle(fontSize: 18),
+            //           ),
+            //           style: Theme.of(context).elevatedButtonTheme.style,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 14),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: Padding(
+            //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //         child: ElevatedButton.icon(
+            //           onPressed: () => _pickImage(ImageSource.camera),
+            //           icon: const Icon(Icons.camera_alt,
+            //               size: 24, color: Colors.black),
+            //           label: Text(
+            //             AppLocalizations.of(context)!.camera,
+            //             style: const TextStyle(fontSize: 18),
+            //           ),
+            //           style: Theme.of(context).elevatedButtonTheme.style,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 14),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: Padding(
+            //         padding: const EdgeInsets.symmetric(
+            //           horizontal: 8.0,
+            //         ),
+            //         child: ElevatedButton.icon(
+            //           onPressed: _testOCR,
+            //           label: Text(
+            //             AppLocalizations.of(context)!.testDemo,
+            //             style: const TextStyle(fontSize: 18),
+            //           ),
+            //           style: Theme.of(context).elevatedButtonTheme.style,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            const SizedBox(height: 16),
+            if (_extractedText.isEmpty && !_isProcessing) ...[
+              const SizedBox(height: 160),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.list_sharp, size: 160),
+                    Text(
+                      'Get Started',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontFamily: 'Oswald',
+                          ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _pickImage(ImageSource.camera),
-                      icon: const Icon(Icons.camera_alt,
-                          size: 24, color: Colors.black),
-                      label: Text(
-                        AppLocalizations.of(context)!.camera,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      style: Theme.of(context).elevatedButtonTheme.style,
+                    const SizedBox(height: 16),
+                    Text(
+                      '1. Add your allergens in the list',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ElevatedButton.icon(
-                      onPressed: _testOCR,
-                      icon: const Icon(Icons.bug_report,
-                          size: 24, color: Colors.black),
-                      label: Text(
-                        AppLocalizations.of(context)!.testDemo,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      style: Theme.of(context).elevatedButtonTheme.style,
+                    const SizedBox(height: 8),
+                    Text(
+                      '2. Take a photo of product ingredients',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Icon(
+                      Icons.arrow_downward,
+                      size: 32,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
             const SizedBox(height: 16),
             if (_isProcessing)
-              const CircularProgressIndicator()
+              Center(child: const CircularProgressIndicator())
             else if (_extractedText.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -335,7 +370,9 @@ class _OCRScreenState extends State<OCRScreen> {
                   children: _matchedWords
                       .map((match) => Chip(
                             label: Text(
-                              match.$2.isEmpty ? match.$1 : '${match.$1} (${match.$2})',
+                              match.$2.isEmpty
+                                  ? match.$1
+                                  : '${match.$1} (${match.$2})',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ))
@@ -344,6 +381,72 @@ class _OCRScreenState extends State<OCRScreen> {
               ],
             ],
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x26000000),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          height: 72,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined, size: 28),
+              selectedIcon: const Icon(Icons.home, size: 28),
+              label: AppLocalizations.of(context)!.home,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.camera_alt_outlined, size: 28),
+              selectedIcon: const Icon(Icons.camera_alt, size: 28),
+              label: AppLocalizations.of(context)!.camera,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.add_box_outlined, size: 28),
+              selectedIcon: const Icon(Icons.add_box, size: 28),
+              label: AppLocalizations.of(context)!.add,
+            ),
+          ],
+          selectedIndex: 0,
+          onDestinationSelected: (index) {
+            switch (index) {
+              case 0:
+                // Already on home screen
+                break;
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScannerScreen(),
+                  ),
+                ).then((image) {
+                  if (image != null) {
+                    setState(() {
+                      _image = File(image.path);
+                      _extractedText = '';
+                      _matchedWords = [];
+                      _isProcessing = true;
+                    });
+                    _extractText();
+                  }
+                });
+                break;
+              case 2:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AllergenFormScreen()),
+                );
+                break;
+            }
+          },
+          indicatorColor: Colors.black26,
+          surfaceTintColor: Colors.transparent,
         ),
       ),
     );
